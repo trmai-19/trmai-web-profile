@@ -20,6 +20,7 @@ interface Particle {
   orbitSpeed: number;
   // Common
   alpha: number;
+  blinkTimer: number;
   isBlinking: boolean;
   isCaught: boolean;
   isSucked: boolean;
