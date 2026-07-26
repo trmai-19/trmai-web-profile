@@ -59,6 +59,18 @@ export function WanderingCorgi() {
     }
   };
 
+  const handleTouchStart = (e: React.TouchEvent) => {
+    if (corgiState !== "walking") return;
+    
+    const shouldDodge = Math.floor(Math.random() * 2) === 1;
+    if (shouldDodge) {
+      e.preventDefault(); // Chặn sự kiện click, không cho nổ
+      if (timerRef.current) clearTimeout(timerRef.current);
+      walkToNewPosition(); // Vọt chạy lẹ
+    }
+    // Nếu ra 0 (không né) thì để yên cho event truyền tới onClick
+  };
+
   useEffect(() => {
     if (mounted && corgiState === "walking") {
       walkToNewPosition();
@@ -150,6 +162,7 @@ export function WanderingCorgi() {
       }}
       onClick={handleCorgiClick}
       onMouseEnter={handleMouseEnter}
+      onTouchStart={handleTouchStart}
       variants={variants}
       initial={{ x: position.x, y: position.y, opacity: 0 }}
       animate={corgiState}
