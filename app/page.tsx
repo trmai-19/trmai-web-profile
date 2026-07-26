@@ -11,6 +11,7 @@ import {
   Target,
   ImagePlus,
   Sparkles,
+  Code,
 } from "lucide-react";
 import { ThemeToggle } from "@/components/theme-toggle";
 import { SleepyCat } from "@/components/sleepy-cat";
@@ -286,6 +287,14 @@ export default function Home() {
                   <Target size={16} />
                 </span>
                 Goal: Seeking fresher / internship opportunities
+              </li>
+              <li className="flex items-start gap-3 sm:items-center">
+                <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-white/70 text-blue-500 dark:bg-dusk-card2 dark:text-blue-400">
+                  <Code size={16} />
+                </span>
+                <span className="mt-1.5 sm:mt-0">
+                  Roles: Full-stack Development, Software Engineer, Backend Engineer, Data Science
+                </span>
               </li>
             </ul>
           </BentoCard>
