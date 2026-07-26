@@ -213,20 +213,14 @@ export default function Home() {
               </motion.span>
             </div>
             <h3 className="font-display text-lg font-bold text-ink dark:text-cream">
-              Hobbies & Vibe
+              Hobbies
             </h3>
             <ul className="mt-4 space-y-3 text-sm font-semibold text-ink-light dark:text-cream/70 sm:text-base">
               <li className="flex items-center gap-3">
                 <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-white/70 text-mint-deep dark:bg-dusk-card2 dark:text-mint">
                   <Footprints size={16} />
                 </span>
-                Hobbies: Badminton, Long walks, Animations
-              </li>
-              <li className="flex items-center gap-3">
-                <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-white/70 text-lavender-deep dark:bg-dusk-card2 dark:text-moon">
-                  <MoonIcon size={16} />
-                </span>
-                Vibe: Sleepyhead
+                Badminton, Long walks, Animations
               </li>
             </ul>
           </BentoCard>
