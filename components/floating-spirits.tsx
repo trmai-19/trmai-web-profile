@@ -133,8 +133,9 @@ export function FloatingSpirits() {
     };
 
     // Khởi tạo lúc render loop bắt đầu
-    // Luôn luôn 20 con trên màn hình
-    particles = initParticles(20);
+    const isMobile = window.innerWidth < 768;
+    // Giảm số lượng trên mobile để chống lag
+    particles = initParticles(isMobile ? 8 : 20);
 
     const drawCloud = (p: Particle) => {
       ctx.save();
@@ -145,7 +146,7 @@ export function FloatingSpirits() {
 
       // Tạo hiệu ứng toả sáng (glow) với màu pastel để nổi bật trên nền
       ctx.shadowColor = `hsla(${p.color}, 80%, ${Math.max(0, p.alpha)})`;
-      ctx.shadowBlur = 15;
+      ctx.shadowBlur = window.innerWidth < 768 ? 0 : 15; // Tắt đổ bóng trên mobile để không bị lag
       
       ctx.beginPath();
       ctx.moveTo(p.radius, 0);
@@ -200,7 +201,7 @@ export function FloatingSpirits() {
       ctx.translate(p.x, p.y);
       // Màu cho Darkmode giữ nguyên L=92% để nổi bật trên nền đen
       ctx.shadowColor = `hsla(${p.color}, 92%, ${Math.max(0, p.alpha)})`;
-      ctx.shadowBlur = 10;
+      ctx.shadowBlur = window.innerWidth < 768 ? 0 : 10; // Tắt đổ bóng trên mobile để không bị lag
       ctx.fillStyle = `hsla(${p.color}, 92%, ${Math.max(0, p.alpha)})`; 
       
       ctx.beginPath();

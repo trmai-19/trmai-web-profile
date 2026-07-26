@@ -1,6 +1,6 @@
 "use client";
 
-import { useRef, useState } from "react";
+import { useRef, useState, useEffect } from "react";
 import type { MouseEvent, ReactNode } from "react";
 import { motion } from "framer-motion";
 
@@ -19,6 +19,11 @@ export function MagneticButton({
 }: MagneticButtonProps) {
   const ref = useRef<HTMLAnchorElement>(null);
   const [position, setPosition] = useState({ x: 0, y: 0 });
+  const [isHoverable, setIsHoverable] = useState(false);
+
+  useEffect(() => {
+    setIsHoverable(window.matchMedia("(hover: hover)").matches);
+  }, []);
 
   const handleMouseMove = (e: MouseEvent<HTMLAnchorElement>) => {
     const el = ref.current;
@@ -44,7 +49,7 @@ export function MagneticButton({
       onMouseLeave={handleMouseLeave}
       animate={{ x: position.x, y: position.y }}
       transition={{ type: "spring", stiffness: 150, damping: 12, mass: 0.5 }}
-      whileHover={{ scale: 1.08 }}
+      whileHover={isHoverable ? { scale: 1.08 } : {}}
       whileTap={{ scale: 0.9 }}
       className={`flex h-16 w-16 items-center justify-center rounded-full border shadow-soft transition-colors duration-300 sm:h-[4.5rem] sm:w-[4.5rem] ${colorClass}`}
     >

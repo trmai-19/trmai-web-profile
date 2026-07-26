@@ -1,12 +1,15 @@
 @import "tailwindcss";
 @config "../tailwind.config.ts";
 
-html {
-  scroll-behavior: smooth;
-}
-
 body {
   @apply bg-cream text-ink transition-colors duration-1000 dark:bg-dusk dark:text-cream;
+  overflow-x: hidden;
+  width: 100%;
+}
+
+html {
+  scroll-behavior: smooth;
+  overflow-x: hidden;
 }
 
 ::selection {

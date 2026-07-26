@@ -20,6 +20,7 @@ import { MagneticButton } from "@/components/magnetic-button";
 
 import { FloatingSpirits } from "@/components/floating-spirits";
 import { SpiritBasket } from "@/components/spirit-basket";
+import { WanderingCorgi } from "@/components/wandering-corgi";
 
 const headline = "Code - Sleep - Music - System - Data and him <3";
 
@@ -70,9 +71,10 @@ export default function Home() {
   const words = headline.split(" ");
 
   return (
-    <main className="relative min-h-screen overflow-hidden bg-cream transition-colors duration-1000 dark:bg-dusk">
+    <main className="relative min-h-screen overflow-x-hidden bg-cream transition-colors duration-1000 dark:bg-dusk">
       <FloatingSpirits />
       <SpiritBasket />
+      <WanderingCorgi />
       <div
         aria-hidden="true"
         className="pointer-events-none fixed inset-0 overflow-hidden z-0"
@@ -82,8 +84,8 @@ export default function Home() {
         <div className="absolute bottom-0 left-1/3 h-72 w-72 animate-float-slow rounded-full bg-mint/40 blur-3xl dark:bg-mint-deep/10" />
       </div>
 
-      <div className="relative mx-auto max-w-6xl px-5 pb-24 pt-10 sm:px-8 lg:px-10">
-        <div className="flex items-center justify-between">
+      <div className="relative z-10 mx-auto max-w-6xl px-5 pb-24 pt-10 sm:px-8 lg:px-10 pointer-events-none">
+        <div className="flex items-center justify-between pointer-events-auto">
           <motion.span
             initial={{ opacity: 0, x: -12 }}
             animate={{ opacity: 1, x: 0 }}
@@ -95,11 +97,11 @@ export default function Home() {
         </div>
 
         {/* Nút chuyển đổi Theme cố định góc dưới bên trái (nhích lên xíu để không đè nút Next.js dev) */}
-        <div className="fixed bottom-24 left-6 z-[110] sm:bottom-12">
+        <div className="fixed bottom-24 left-6 z-[110] sm:bottom-12 pointer-events-auto">
           <ThemeToggle />
         </div>
 
-        <section className="mt-10 flex flex-col items-start gap-10 sm:mt-16 sm:flex-row sm:items-center sm:justify-between">
+        <section className="mt-10 flex flex-col items-start gap-10 sm:mt-16 sm:flex-row sm:items-center sm:justify-between pointer-events-auto">
           <div className="max-w-2xl">
             <motion.div
               initial={{ opacity: 0, y: 16 }}
@@ -155,7 +157,7 @@ export default function Home() {
           </motion.div>
         </section>
 
-        <section className="mt-16 grid grid-cols-1 gap-5 sm:mt-24 sm:grid-cols-2 lg:grid-cols-3 lg:grid-rows-2 lg:gap-6">
+        <section className="mt-16 grid grid-cols-1 gap-5 sm:mt-24 sm:grid-cols-2 lg:grid-cols-3 lg:grid-rows-2 lg:gap-6 pointer-events-auto">
           <BentoCard
             index={0}
             className="border-lavender-deep/30 bg-lavender/50 dark:border-moon/40 dark:bg-dusk-card dark:!shadow-[0_0_25px_rgba(201,184,240,0.3)]"
@@ -227,7 +229,7 @@ export default function Home() {
 
           <BentoCard
             index={2}
-            className="group relative flex min-h-[280px] overflow-hidden items-center justify-center border-2 border-lavender-deep/50 bg-white/40 dark:border-moon/40 dark:bg-dusk-card dark:!shadow-[0_0_25px_rgba(201,184,240,0.3)] sm:col-span-2 lg:col-span-1 lg:row-span-2"
+            className="group relative flex aspect-[4/5] sm:aspect-auto min-h-[280px] overflow-hidden items-center justify-center border-2 border-lavender-deep/50 bg-white/40 dark:border-moon/40 dark:bg-dusk-card dark:!shadow-[0_0_25px_rgba(201,184,240,0.3)] sm:col-span-2 lg:col-span-1 lg:row-span-2"
           >
             {/* Hướng dẫn: Đặt 2 file ảnh vào thư mục D:\TRMAI\trmai-profile\public\ */}
             {/* Ảnh cho Light Mode */}
@@ -293,7 +295,7 @@ export default function Home() {
           <Marquee />
         </div>
 
-        <section className="mt-16 flex flex-col items-center gap-8 text-center sm:mt-20">
+        <section className="mt-16 flex flex-col items-center gap-8 text-center sm:mt-20 pointer-events-auto">
           <div>
             <h2 data-collide="true" className="font-display text-2xl font-extrabold text-ink dark:text-cream sm:text-3xl">
               Let&apos;s Connect
@@ -305,28 +307,28 @@ export default function Home() {
 
           <div className="flex flex-wrap items-center justify-center gap-5">
             <MagneticButton
-              href="https://facebook.com"
+              href="https://www.facebook.com/dt.mai.1910/"
               label="Facebook"
               colorClass="border-lavender-deep/30 bg-lavender/60 text-lavender-deep dark:border-dusk-border dark:bg-dusk-card dark:text-moon"
             >
               <FacebookIcon />
             </MagneticButton>
             <MagneticButton
-              href="https://github.com"
+              href="https://github.com/trmai-19"
               label="GitHub"
               colorClass="border-pink-deep/30 bg-pink/60 text-pink-deep dark:border-dusk-border dark:bg-dusk-card dark:text-moon-soft"
             >
               <GithubIcon />
             </MagneticButton>
             <MagneticButton
-              href="https://linkedin.com"
+              href="https://www.linkedin.com/in/trúc-mai-đặng-1a8329418"
               label="LinkedIn"
               colorClass="border-mint-deep/30 bg-mint/60 text-mint-deep dark:border-dusk-border dark:bg-dusk-card dark:text-mint"
             >
               <LinkedinIcon />
             </MagneticButton>
             <MagneticButton
-              href="https://codeforces.com"
+              href="https://codeforces.com/profile/dtmai"
               label="Codeforces"
               colorClass="border-peach-deep/30 bg-peach/60 text-peach-deep dark:border-dusk-border dark:bg-dusk-card dark:text-peach"
             >
