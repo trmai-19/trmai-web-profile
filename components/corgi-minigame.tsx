@@ -29,6 +29,7 @@ export function CorgiMinigame({ onClose }: CorgiMinigameProps) {
   const isGameOver = useRef(false);
   const requestRef = useRef<number>(0);
   const lastSpawnTime = useRef(0);
+  const scaleMultiplier = useRef(2);
 
   // Constants
   const corgiOrange = "#F29C38";
@@ -43,6 +44,12 @@ export function CorgiMinigame({ onClose }: CorgiMinigameProps) {
       x: window.innerWidth / 2 - 40,
       y: window.innerHeight / 2 - 30,
     };
+    // Tính toán tỷ lệ phóng to dựa trên kích thước màn hình
+    // Base scale = 0.6 (48px). Ở hit thứ 5 (nổ), Corgi chiếm khoảng 90% cạnh nhỏ nhất của màn hình.
+    const maxSize = Math.min(window.innerWidth, window.innerHeight) * 0.9;
+    const maxScale = maxSize / 80; // Vì SVG là 80x80
+    scaleMultiplier.current = Math.pow(maxScale / 0.6, 1 / 5);
+
     if (corgiRef.current) {
       corgiRef.current.style.transform = `translate3d(${corgiPos.current.x}px, ${corgiPos.current.y}px, 0) scale(0.6)`;
     }
@@ -160,7 +167,7 @@ export function CorgiMinigame({ onClose }: CorgiMinigameProps) {
       ctx.clearRect(0, 0, width, height);
 
       // Cập nhật Corgi DOM Position & Scale
-      const scale = 0.6 * Math.pow(2, hits.current); // Nhân đôi sau mỗi hit: 0.6, 1.2, 2.4, 4.8...
+      const scale = 0.6 * Math.pow(scaleMultiplier.current, hits.current);
       if (corgiRef.current) {
         corgiRef.current.style.transform = `translate3d(${corgiPos.current.x}px, ${corgiPos.current.y}px, 0) scale(${scale})`;
       }
