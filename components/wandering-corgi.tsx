@@ -5,7 +5,11 @@ import { motion } from "framer-motion";
 
 type CorgiState = "walking" | "angry" | "exploding";
 
-export function WanderingCorgi() {
+interface WanderingCorgiProps {
+  onCatch?: () => void;
+}
+
+export function WanderingCorgi({ onCatch }: WanderingCorgiProps = {}) {
   const [mounted, setMounted] = useState(false);
   const [corgiState, setCorgiState] = useState<CorgiState>("walking");
   
@@ -81,21 +85,21 @@ export function WanderingCorgi() {
   }, [mounted, corgiState]);
 
   const handleCorgiClick = () => {
-    if (corgiState !== "walking") return;
-    if (timerRef.current) clearTimeout(timerRef.current);
-    
-    setCorgiState("angry");
-    
-    setTimeout(() => {
-      setCorgiState("exploding");
-      setTimeout(() => {
-        setPosition({
-          x: Math.random() * (window.innerWidth - 100) + 50,
-          y: Math.random() * (window.innerHeight - 100) + 50,
-        });
-        setCorgiState("walking");
-      }, 1500);
-    }, 700); // Rút ngắn thời gian giận dữ xuống còn 0.7s
+    if (corgiState === "walking") {
+      setCorgiState("angry");
+      if (timerRef.current) clearTimeout(timerRef.current);
+      
+      // Giận dữ trong 0.7s, sau đó phát nổ
+      timerRef.current = setTimeout(() => {
+        setCorgiState("exploding");
+        
+        // Vừa nổ xong là chuyển màn vào game luôn
+        setTimeout(() => {
+          if (onCatch) onCatch();
+          else walkToNewPosition();
+        }, 1000);
+      }, 700);
+    }
   };
 
   if (!mounted) return null;

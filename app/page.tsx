@@ -1,5 +1,7 @@
 "use client";
 
+import { useState } from "react";
+
 import { motion } from "framer-motion";
 import {
   Heart,
@@ -22,6 +24,7 @@ import { MagneticButton } from "@/components/magnetic-button";
 import { FloatingSpirits } from "@/components/floating-spirits";
 import { SpiritBasket } from "@/components/spirit-basket";
 import { WanderingCorgi } from "@/components/wandering-corgi";
+import { CorgiMinigame } from "@/components/corgi-minigame";
 
 const headline = "Code - Sleep - Music - System - Data and him <3";
 
@@ -69,13 +72,14 @@ function LinkedinIcon() {
 }
 
 export default function Home() {
+  const [isGameActive, setIsGameActive] = useState(false);
   const words = headline.split(" ");
 
   return (
     <main className="relative min-h-screen overflow-x-hidden bg-cream transition-colors duration-1000 dark:bg-dusk">
       <FloatingSpirits />
       <SpiritBasket />
-      <WanderingCorgi />
+      <WanderingCorgi onCatch={() => setIsGameActive(true)} />
       <div
         aria-hidden="true"
         className="pointer-events-none fixed inset-0 overflow-hidden z-0"
@@ -346,6 +350,8 @@ export default function Home() {
           </div>
         </section>
       </div>
+
+      {isGameActive && <CorgiMinigame onClose={() => setIsGameActive(false)} />}
     </main>
   );
 }
