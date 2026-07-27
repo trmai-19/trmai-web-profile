@@ -241,7 +241,7 @@ export function WanderingCorgi({ onCatch }: WanderingCorgiProps = {}) {
           initial={{ opacity: 0, y: 5 }}
           animate={{ opacity: 1, y: 0 }}
           className="absolute top-[80px] left-1/2 -translate-x-1/2 whitespace-nowrap font-display text-[10px] font-extrabold text-[#F29C38] tracking-wide"
-          style={{ zIndex: 100000, WebkitTextStroke: "0.25px white", dropShadow: "0 0 2px rgba(242,156,56,0.8)" }}
+          style={{ zIndex: 100000, WebkitTextStroke: "0.25px white", filter: "drop-shadow(0 0 2px rgba(242,156,56,0.8))" }}
         >
           MINIGAME GIẢI CỨU CORGI
         </motion.div>
