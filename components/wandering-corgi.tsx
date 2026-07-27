@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect, useRef } from "react";
-import { motion } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 
 type CorgiState = "walking" | "angry" | "exploding";
 
@@ -12,6 +12,7 @@ interface WanderingCorgiProps {
 export function WanderingCorgi({ onCatch }: WanderingCorgiProps = {}) {
   const [mounted, setMounted] = useState(false);
   const [corgiState, setCorgiState] = useState<CorgiState>("walking");
+  const stateRef = useRef<CorgiState>("walking");
   
   const [position, setPosition] = useState({ x: -100, y: -100 });
   const [facingRight, setFacingRight] = useState(true);
@@ -28,7 +29,8 @@ export function WanderingCorgi({ onCatch }: WanderingCorgiProps = {}) {
   }, []);
 
   const walkToNewPosition = () => {
-    if (corgiState !== "walking") return;
+    if (stateRef.current !== "walking") return;
+    if (timerRef.current) clearTimeout(timerRef.current);
 
     const w = window.innerWidth;
     const h = window.innerHeight;
@@ -53,7 +55,7 @@ export function WanderingCorgi({ onCatch }: WanderingCorgiProps = {}) {
   };
 
   const handleMouseEnter = () => {
-    if (corgiState !== "walking") return;
+    if (stateRef.current !== "walking") return;
     
     // Tỉ lệ 50/50: 1 là né (chạy liền), 0 là đứng yên cho bắt
     const shouldDodge = Math.floor(Math.random() * 2) === 1;
@@ -64,7 +66,7 @@ export function WanderingCorgi({ onCatch }: WanderingCorgiProps = {}) {
   };
 
   const handleTouchStart = (e: React.TouchEvent) => {
-    if (corgiState !== "walking") return;
+    if (stateRef.current !== "walking") return;
     
     const shouldDodge = Math.floor(Math.random() * 2) === 1;
     if (shouldDodge) {
@@ -79,26 +81,30 @@ export function WanderingCorgi({ onCatch }: WanderingCorgiProps = {}) {
     if (mounted && corgiState === "walking") {
       walkToNewPosition();
     }
+  }, [mounted, corgiState]);
+
+  useEffect(() => {
     return () => {
       if (timerRef.current) clearTimeout(timerRef.current);
     };
-  }, [mounted, corgiState]);
+  }, []);
 
   const handleCorgiClick = () => {
-    if (corgiState === "walking") {
+    if (stateRef.current === "walking") {
+      stateRef.current = "angry";
       setCorgiState("angry");
+      // Bay thẳng ra giữa màn hình
+      setPosition({ x: window.innerWidth / 2 - 40, y: window.innerHeight / 2 - 30 });
       if (timerRef.current) clearTimeout(timerRef.current);
       
-      // Giận dữ trong 0.7s, sau đó phát nổ
+      // Giận dữ giữa màn hình trong 2s để dễ nhìn logo, sau đó vào thẳng game (không nổ)
       timerRef.current = setTimeout(() => {
-        setCorgiState("exploding");
+        if (onCatch) onCatch();
         
-        // Vừa nổ xong là chuyển màn vào game luôn
-        setTimeout(() => {
-          if (onCatch) onCatch();
-          else walkToNewPosition();
-        }, 1000);
-      }, 700);
+        // Sau khi ném event lên cha, reset Corgi về walking để lúc user thoát game nó vẫn sống
+        stateRef.current = "walking";
+        setCorgiState("walking");
+      }, 2000);
     }
   };
 
@@ -116,10 +122,10 @@ export function WanderingCorgi({ onCatch }: WanderingCorgiProps = {}) {
     angry: {
       x: position.x,
       y: position.y,
-      scaleX: 3.5, // Mặt chính diện nên không cần đảo chiều, phóng to x3.5
-      scaleY: 3.5,
+      scaleX: 4, // Phóng to cực đại ở giữa màn hình
+      scaleY: 4,
       opacity: 1,
-      rotate: [-5, 5, -8, 8, -5],
+      rotate: 0, // Không rung lắc
     },
     exploding: {
       x: position.x,
@@ -138,9 +144,11 @@ export function WanderingCorgi({ onCatch }: WanderingCorgiProps = {}) {
       rotate: { repeat: Infinity, duration: 0.6, ease: "easeInOut" },
     },
     angry: {
-      scaleX: { duration: 0.4, type: "spring", bounce: 0.5 },
-      scaleY: { duration: 0.4, type: "spring", bounce: 0.5 },
-      rotate: { repeat: Infinity, duration: 0.1 }, 
+      scaleX: { duration: 0.5, type: "spring", bounce: 0.6 },
+      scaleY: { duration: 0.5, type: "spring", bounce: 0.6 },
+      x: { duration: 0 },
+      y: { duration: 0 },
+      rotate: { duration: 0 }, 
     },
     exploding: {
       scaleX: { duration: 0.3, ease: "easeOut" },
@@ -157,8 +165,21 @@ export function WanderingCorgi({ onCatch }: WanderingCorgiProps = {}) {
   const corgiBlack = "#333333";
 
   return (
-    <motion.div
-      className="fixed select-none cursor-pointer drop-shadow-md"
+    <>
+      {/* Background tối đi khi đang chuẩn bị vào game */}
+      <AnimatePresence>
+        {corgiState !== "walking" && (
+          <motion.div 
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 bg-black/70 z-[9998] pointer-events-none"
+          />
+        )}
+      </AnimatePresence>
+
+      <motion.div
+        className="fixed select-none cursor-pointer drop-shadow-md"
       style={{ 
         marginLeft: -40, 
         marginTop: -30,
@@ -213,6 +234,17 @@ export function WanderingCorgi({ onCatch }: WanderingCorgiProps = {}) {
           {/* Miệng gầm gừ (răng cưa) */}
           <path d="M 40 75 L 45 72 L 50 75 L 55 72 L 60 75" fill="none" stroke={corgiBlack} strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" />
         </svg>
+      )}
+
+      {corgiState === "angry" && (
+        <motion.div 
+          initial={{ opacity: 0, y: 5 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="absolute top-[80px] left-1/2 -translate-x-1/2 whitespace-nowrap font-display text-[10px] font-extrabold text-[#F29C38] tracking-wide"
+          style={{ zIndex: 100000, WebkitTextStroke: "0.25px white", dropShadow: "0 0 2px rgba(242,156,56,0.8)" }}
+        >
+          MINIGAME GIẢI CỨU CORGI
+        </motion.div>
       )}
 
       {corgiState === "walking" && (
@@ -281,5 +313,6 @@ export function WanderingCorgi({ onCatch }: WanderingCorgiProps = {}) {
         </svg>
       )}
     </motion.div>
+    </>
   );
 }

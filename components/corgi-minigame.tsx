@@ -13,8 +13,9 @@ export function CorgiMinigame({ onClose }: CorgiMinigameProps) {
   const corgiRef = useRef<HTMLDivElement>(null);
 
   const [gameState, setGameState] = useState<"playing" | "win" | "lose">("playing");
-  const [timeLeft, setTimeLeft] = useState(90);
+  const [timeLeft, setTimeLeft] = useState(60);
   const [hitCount, setHitCount] = useState(0);
+  const [countdown, setCountdown] = useState(5);
 
   // Mutable state cho Game Loop (60fps)
   const corgiPos = useRef({ x: 0, y: 0 });
@@ -43,7 +44,7 @@ export function CorgiMinigame({ onClose }: CorgiMinigameProps) {
       y: window.innerHeight / 2 - 30,
     };
     if (corgiRef.current) {
-      corgiRef.current.style.transform = `translate3d(${corgiPos.current.x}px, ${corgiPos.current.y}px, 0)`;
+      corgiRef.current.style.transform = `translate3d(${corgiPos.current.x}px, ${corgiPos.current.y}px, 0) scale(0.6)`;
     }
 
     const handleKeyDown = (e: KeyboardEvent) => {
@@ -65,33 +66,43 @@ export function CorgiMinigame({ onClose }: CorgiMinigameProps) {
 
   const spawnBullet = (time: number) => {
     // Tăng tốc độ và số lượng theo thời gian (time là thời gian đã chơi theo giây)
-    const difficultyMultiplier = 1 + time / 30; // Cứ 30s tăng độ khó lên 1 mức
+    const difficultyMultiplier = 1 + time / 20; // Tăng độ khó nhanh hơn (mỗi 20s)
     
     // Đạn bay từ viền màn hình vào
     const edge = Math.floor(Math.random() * 4); // 0: top, 1: right, 2: bottom, 3: left
     let x, y, vx, vy;
-    const speed = (Math.random() * 3 + 2) * difficultyMultiplier;
+    const speed = (Math.random() * 5 + 6) * difficultyMultiplier; // Đạn bay nhanh ngay từ đầu
     
     const w = window.innerWidth;
     const h = window.innerHeight;
 
     if (edge === 0) {
       x = Math.random() * w; y = -20;
-      vx = (Math.random() - 0.5) * speed; vy = speed;
     } else if (edge === 1) {
       x = w + 20; y = Math.random() * h;
-      vx = -speed; vy = (Math.random() - 0.5) * speed;
     } else if (edge === 2) {
       x = Math.random() * w; y = h + 20;
-      vx = (Math.random() - 0.5) * speed; vy = -speed;
     } else {
       x = -20; y = Math.random() * h;
-      vx = speed; vy = (Math.random() - 0.5) * speed;
     }
+
+    // Nhắm thẳng vào tâm Corgi hiện tại
+    const targetX = corgiPos.current.x + 40;
+    const targetY = corgiPos.current.y + 30;
+    const dx = targetX - x;
+    const dy = targetY - y;
+    const dist = Math.sqrt(dx * dx + dy * dy);
+
+    vx = (dx / dist) * speed;
+    vy = (dy / dist) * speed;
+
+    // Đôi lúc thêm chút nhiễu loạn để đạn không hoàn toàn thành đường thẳng
+    vx += (Math.random() - 0.5) * speed * 0.3;
+    vy += (Math.random() - 0.5) * speed * 0.3;
 
     bullets.current.push({
       x, y, vx, vy,
-      radius: Math.random() * 4 + 4,
+      radius: Math.random() * 8 + 8, // Tăng kích thước bự hơn
       color: `hsl(${Math.random() * 360}, 80%, 60%)`
     });
   };
@@ -125,7 +136,7 @@ export function CorgiMinigame({ onClose }: CorgiMinigameProps) {
       gameTime.current = elapsedSec;
       
       // Update Timer UI mỗi nửa giây để tối ưu
-      const currentLeft = Math.max(0, 90 - Math.floor(elapsedSec));
+      const currentLeft = Math.max(0, 60 - Math.floor(elapsedSec));
       setTimeLeft((prev) => (prev !== currentLeft ? currentLeft : prev));
 
       if (currentLeft <= 0) {
@@ -135,8 +146,8 @@ export function CorgiMinigame({ onClose }: CorgiMinigameProps) {
       }
 
       // Spawn đạn
-      // Base rate: 1000ms / difficulty
-      const spawnInterval = Math.max(100, 1000 - (elapsedSec * 10)); // Giảm dần tới 100ms
+      // Base rate: 400ms / difficulty
+      const spawnInterval = Math.max(50, 400 - (elapsedSec * 6)); // Giảm dần tới 50ms (dày đặc)
       if (now - lastSpawnTime.current > spawnInterval) {
         spawnBullet(elapsedSec);
         // Có thể spawn 2-3 viên cùng lúc nếu qua 30s
@@ -149,7 +160,7 @@ export function CorgiMinigame({ onClose }: CorgiMinigameProps) {
       ctx.clearRect(0, 0, width, height);
 
       // Cập nhật Corgi DOM Position & Scale
-      const scale = 1 + hits.current * 0.3; // Phình to lên
+      const scale = 0.6 * Math.pow(2, hits.current); // Nhân đôi sau mỗi hit: 0.6, 1.2, 2.4, 4.8...
       if (corgiRef.current) {
         corgiRef.current.style.transform = `translate3d(${corgiPos.current.x}px, ${corgiPos.current.y}px, 0) scale(${scale})`;
       }
@@ -213,6 +224,21 @@ export function CorgiMinigame({ onClose }: CorgiMinigameProps) {
       window.removeEventListener("resize", resize);
     };
   }, []);
+
+  useEffect(() => {
+    if (gameState !== "playing") {
+      const timer = setInterval(() => {
+        setCountdown((prev) => (prev > 0 ? prev - 1 : 0));
+      }, 1000);
+      return () => clearInterval(timer);
+    }
+  }, [gameState]);
+
+  useEffect(() => {
+    if (countdown <= 0) {
+      onClose();
+    }
+  }, [countdown, onClose]);
 
   // Điều khiển Joystick cảm ứng / Chuột
   const handlePointerDown = (e: React.PointerEvent) => {
@@ -340,13 +366,7 @@ export function CorgiMinigame({ onClose }: CorgiMinigameProps) {
                   <p className="text-cream/80 mb-8">Bé Corgi đã ăn quá nhiều đạn và nổ tung :(</p>
                 </>
               )}
-              
-              <button 
-                onClick={onClose}
-                className="bg-white/10 hover:bg-white/20 text-cream px-8 py-3 rounded-full font-bold transition-colors"
-              >
-                Quay lại Profile
-              </button>
+              <p className="text-cream/50 mt-4 font-mono">Quay lại profile sau {countdown}s...</p>
             </div>
           </motion.div>
         )}
