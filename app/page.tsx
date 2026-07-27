@@ -79,7 +79,7 @@ export default function Home() {
     <main className="relative min-h-screen overflow-x-hidden bg-cream transition-colors duration-1000 dark:bg-dusk">
       <FloatingSpirits />
       <SpiritBasket />
-      <WanderingCorgi onCatch={() => setIsGameActive(true)} />
+      {!isGameActive && <WanderingCorgi onCatch={() => setIsGameActive(true)} />}
       <div
         aria-hidden="true"
         className="pointer-events-none fixed inset-0 overflow-hidden z-0"
