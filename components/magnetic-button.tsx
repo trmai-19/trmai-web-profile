@@ -1,6 +1,6 @@
 "use client";
 
-import { useRef, useState, useEffect } from "react";
+import { useRef, useState, useSyncExternalStore } from "react";
 import type { MouseEvent, ReactNode } from "react";
 import { motion } from "framer-motion";
 
@@ -11,6 +11,20 @@ interface MagneticButtonProps {
   colorClass?: string;
 }
 
+const subscribeHover = (callback: () => void) => {
+  if (typeof window === "undefined") return () => {};
+  const mql = window.matchMedia("(hover: hover)");
+  mql.addEventListener("change", callback);
+  return () => mql.removeEventListener("change", callback);
+};
+
+const getHoverSnapshot = () => {
+  if (typeof window === "undefined") return false;
+  return window.matchMedia("(hover: hover)").matches;
+};
+
+const getServerHoverSnapshot = () => false;
+
 export function MagneticButton({
   href,
   label,
@@ -19,11 +33,7 @@ export function MagneticButton({
 }: MagneticButtonProps) {
   const ref = useRef<HTMLAnchorElement>(null);
   const [position, setPosition] = useState({ x: 0, y: 0 });
-  const [isHoverable, setIsHoverable] = useState(false);
-
-  useEffect(() => {
-    setIsHoverable(window.matchMedia("(hover: hover)").matches);
-  }, []);
+  const isHoverable = useSyncExternalStore(subscribeHover, getHoverSnapshot, getServerHoverSnapshot);
 
   const handleMouseMove = (e: MouseEvent<HTMLAnchorElement>) => {
     const el = ref.current;

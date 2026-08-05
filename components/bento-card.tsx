@@ -1,7 +1,7 @@
 "use client";
 
 import { motion } from "framer-motion";
-import { type ReactNode, useEffect, useState } from "react";
+import { type ReactNode, useSyncExternalStore } from "react";
 
 interface BentoCardProps {
   children: ReactNode;
@@ -9,22 +9,31 @@ interface BentoCardProps {
   index?: number;
 }
 
-export function BentoCard({ children, className = "", index = 0 }: BentoCardProps) {
-  const [isHoverable, setIsHoverable] = useState(false);
+const subscribeHover = (callback: () => void) => {
+  if (typeof window === "undefined") return () => {};
+  const mql = window.matchMedia("(hover: hover)");
+  mql.addEventListener("change", callback);
+  return () => mql.removeEventListener("change", callback);
+};
 
-  useEffect(() => {
-    setIsHoverable(window.matchMedia("(hover: hover)").matches);
-  }, []);
+const getHoverSnapshot = () => {
+  if (typeof window === "undefined") return false;
+  return window.matchMedia("(hover: hover)").matches;
+};
+
+const getServerHoverSnapshot = () => false;
+
+export function BentoCard({ children, className = "", index = 0 }: BentoCardProps) {
+  const isHoverable = useSyncExternalStore(subscribeHover, getHoverSnapshot, getServerHoverSnapshot);
 
   return (
     <motion.div
-      data-collide="true"
-      initial={{ opacity: 0, y: 32, scale: 0.96 }}
-      whileInView={{ opacity: 1, y: 0, scale: 1 }}
-      viewport={{ once: true, amount: 0.3 }}
-      transition={{ duration: 0.6, delay: index * 0.12, ease: [0.22, 1, 0.36, 1] }}
-      whileHover={isHoverable ? { y: -6, scale: 1.02, rotate: index % 2 === 0 ? -0.6 : 0.6 } : {}}
-      className={`group relative overflow-hidden rounded-4xl border p-6 shadow-soft transition-colors duration-1000 dark:shadow-soft-dark sm:p-8 ${className}`}
+      initial={{ opacity: 0, y: 20 }}
+      whileInView={{ opacity: 1, y: 0 }}
+      viewport={{ once: true, amount: 0.2 }}
+      transition={{ duration: 0.45, delay: index * 0.08, ease: "easeOut" }}
+      whileHover={isHoverable ? { y: -4 } : {}}
+      className={`group relative overflow-hidden rounded-4xl border p-6 shadow-soft transition-colors duration-500 dark:shadow-soft-dark sm:p-8 ${className}`}
     >
       {children}
     </motion.div>

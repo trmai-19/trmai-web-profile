@@ -14,7 +14,13 @@ function MarqueeGroup({ text }: { text: string }) {
 }
 
 export function Marquee() {
-  const words = ["Code", "Sleepyhead", "Algorithms", "Data"];
+  const words = [
+    "Software Engineering",
+    "Backend Systems",
+    "Algorithms",
+    "Data Science",
+    "System Architecture",
+  ];
   const text = words.join("   •   ") + "   •  ";
 
   return (
